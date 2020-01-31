@@ -40,10 +40,4 @@ export class AuthService {
     return createdUser;
   }
 
-  updatePassword(username: string, newPassword: string): User {
-    const updatedUser = this.usersService.updatePassword(username, newPassword);
-    delete updatedUser.password;
-    return updatedUser;
-  }
-
 }

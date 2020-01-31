@@ -15,12 +15,14 @@ export class UsersController {
 
   @Post('password')
   updatePassword(@Request() req): User {
-    const currentUser: User = req.user;
+    let currentUser: User = req.user;
     const { password, confirmation } = req.body;
     if (password !== confirmation) throw new BadRequestException();
-    const updatedUser = this.usersService.updatePassword(currentUser.username, password);
-    delete updatedUser.password;
-    return updatedUser;
+
+    currentUser.password = password;
+    currentUser = this.usersService.update(currentUser);
+    delete currentUser.password;
+    return currentUser;
   }
 
 }

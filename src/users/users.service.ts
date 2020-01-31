@@ -36,6 +36,20 @@ export class UsersService {
     ];
   }
 
+  getAll(): User[] {
+    return this.users.map(user => {
+      user = Object.assign({}, user);
+      delete user.password;
+      return user;
+    });
+  }
+
+  getById(userId: number): User {
+    const users = this.users.filter(user => user.userId === userId);
+    if (users.length === 0) throw new NotFoundException();
+    return Object.assign({}, users[0]);
+  }
+
   findOne(username: string): User {
     const existsUser = this.users.find(user => user.username === username);
     return existsUser ? Object.assign({}, existsUser) : null;
@@ -50,18 +64,10 @@ export class UsersService {
   }
 
   update(user: User): User {
-    const currentUser = this.users.find(entry => entry.username === user.username);
-    if (!currentUser) throw new NotFoundException();
-    this.users.splice(this.users.indexOf(currentUser), 1);
+    const index = this.users.findIndex(entry => entry.userId === user.userId);
+    this.users.splice(index, 1);
     this.users.push(user);
     return Object.assign({}, user);
-  }
-
-  updatePassword(username: string, password: any): User {
-    const user = this.findOne(username);
-    if (!user) throw new NotFoundException();
-    user.password = password;
-    return this.update(user);
   }
 
 }
