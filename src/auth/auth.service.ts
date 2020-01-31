@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { UsersService, User } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt'
 
+export type Token = {
+  token: string;
+}
+
 @Injectable()
 export class AuthService {
 
@@ -10,33 +14,36 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async validateUser(username: string, password: string): Promise<User> {
-    const user = await this.usersService.findOne(username);
+  validateUser(username: string, pwd: string): User {
+    const user = this.usersService.findOne(username);
 
-    if (user && user.password === password) {
+    if (user && user.password === pwd) {
 
-      const { password, ...result } = user;
-      return result as User;
+      delete user.password
+      return user;
 
     }
+
     return null;
   }
 
-  async login(user: User) {
+  login(user: User): Token  {
     const payload = { username: user.username, sub: user.userId }
 
     return { token: this.jwtService.sign(payload) }
 
   }
 
-  async register(user: User): Promise<User> {
-    const { password, ...result } = await this.usersService.create(user);
-    return result as User;
+  register(user: User): User {
+    const createdUser = this.usersService.create(user);
+    delete createdUser.password;
+    return createdUser;
   }
 
-  async updatePassword(username: string, newPassword: string): Promise<User> {
-    const { password, ...result } = await this.usersService.updatePassword(username, newPassword);
-    return result as User
+  updatePassword(username: string, newPassword: string): User {
+    const updatedUser = this.usersService.updatePassword(username, newPassword);
+    delete updatedUser.password;
+    return updatedUser;
   }
 
 }

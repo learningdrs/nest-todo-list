@@ -1,10 +1,10 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 
 export type User = {
-  userId: number,
-  username: string,
-  password: string,
-  roles?: string[]
+  userId: number;
+  username: string;
+  password: string;
+  roles?: string[];
 };
 
 @Injectable()
@@ -36,23 +36,32 @@ export class UsersService {
     ];
   }
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+  findOne(username: string): User {
+    const existsUser = this.users.find(user => user.username === username);
+    return existsUser ? Object.assign({}, existsUser) : null;
   }
 
-  async create(user: User): Promise<User> {
-    const existsUser = await this.findOne(user.username);
+  create(user: User): User {
+    const existsUser = this.findOne(user.username);
     if (existsUser) throw new ConflictException();
     user.userId = this.currentId++;
     this.users.push(user);
-    return user;
+    return Object.assign({}, user);
   }
 
-  async updatePassword(username: string, password: any): Promise<User> {
-    const user = await this.findOne(username);
+  update(user: User): User {
+    const currentUser = this.users.find(entry => entry.username === user.username);
+    if (!currentUser) throw new NotFoundException();
+    this.users.splice(this.users.indexOf(currentUser), 1);
+    this.users.push(user);
+    return Object.assign({}, user);
+  }
+
+  updatePassword(username: string, password: any): User {
+    const user = this.findOne(username);
     if (!user) throw new NotFoundException();
     user.password = password;
-    return user;
+    return this.update(user);
   }
 
 }
