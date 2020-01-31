@@ -14,4 +14,10 @@ export class AuthController {
     return this.authService.login(req.user as User);
   }
 
+  @Post('register')
+  async register(@Request() req) {
+    const user = await this.authService.register(req.body as User);
+    return this.authService.login(user);
+  }
+
 }

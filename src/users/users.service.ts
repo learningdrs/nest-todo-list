@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 
 export type User = {
   userId: number,
@@ -11,17 +11,19 @@ export class UsersService {
 
   private readonly users: User[];
 
+  private currentId = 4;
+
   constructor() {
     this.users = [
       {
         userId: 1,
         username: 'john',
-        password: 'changeme',
+        password: 'changeme'
       },
       {
         userId: 2,
         username: 'chris',
-        password: 'secret',
+        password: 'secret'
       },
       {
         userId: 3,
@@ -33,6 +35,14 @@ export class UsersService {
 
   async findOne(username: string): Promise<User | undefined> {
     return this.users.find(user => user.username === username);
+  }
+
+  async create(user: User): Promise<User> {
+    const existsUser = await this.findOne(user.username);
+    if (existsUser) throw new ConflictException();
+    user.userId = this.currentId++;
+    this.users.push(user);
+    return user;
   }
 
 }

@@ -29,4 +29,9 @@ export class AuthService {
 
   }
 
+  async register(user: User): Promise<User> {
+    const { password, ...result } = await this.usersService.create(user);
+    return result as User;
+  }
+
 }
