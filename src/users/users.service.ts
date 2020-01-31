@@ -39,7 +39,6 @@ export class UsersService {
   getAll(): User[] {
     return this.users.map(user => {
       user = Object.assign({}, user);
-      delete user.password;
       return user;
     });
   }
