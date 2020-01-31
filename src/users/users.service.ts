@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 
 export type User = {
   userId: number,
@@ -45,6 +45,13 @@ export class UsersService {
     if (existsUser) throw new ConflictException();
     user.userId = this.currentId++;
     this.users.push(user);
+    return user;
+  }
+
+  async updatePassword(username: string, password: any): Promise<User> {
+    const user = await this.findOne(username);
+    if (!user) throw new NotFoundException();
+    user.password = password;
     return user;
   }
 

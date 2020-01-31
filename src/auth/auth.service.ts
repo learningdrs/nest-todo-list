@@ -34,4 +34,9 @@ export class AuthService {
     return result as User;
   }
 
+  async updatePassword(username: string, newPassword: string): Promise<User> {
+    const { password, ...result } = await this.usersService.updatePassword(username, newPassword);
+    return result as User
+  }
+
 }
