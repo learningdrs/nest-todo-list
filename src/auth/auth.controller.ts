@@ -1,9 +1,7 @@
-import { Controller, UseGuards, Post, Request, BadRequestException } from '@nestjs/common';
+import { Controller, UseGuards, Post, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, Token } from './auth.service';
 import { User } from 'src/users/users.service';
-import { Roles } from './roles.decorator';
-import { RolesGuard } from './roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,16 +17,6 @@ export class AuthController {
   @Post('register')
   register(@Request() req): Token {
     const user = this.authService.register(req.body as User);
-    return this.authService.login(user);
-  }
-
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('admin')
-  @Post('password/update')
-  updatePassword(@Request() req): Token {
-    const { username, password, confirmation } = req.body;
-    if (password !== confirmation) throw new BadRequestException();
-    const user = this.authService.updatePassword(username, password);
     return this.authService.login(user);
   }
 
