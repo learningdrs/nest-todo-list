@@ -1,6 +1,6 @@
-import { Controller, UseGuards, Get, Request, BadRequestException, Put, Post } from '@nestjs/common';
+import { Controller, UseGuards, Get, Request, BadRequestException, Put, Post, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User, UsersService } from './users.service';
+import { User, UsersService, Todo } from './users.service';
 import { CurrentUserOrAdminGuard } from './current-user-or-admin.guard';
 
 /**
@@ -54,6 +54,27 @@ export class UsersController {
     user = this.usersService.update(user);
     delete user.password;
     return user;
+  }
+
+  @Get(':userId/todos')
+  getAllTodos(@Request() req): Todo[] {
+    const user = this.usersService.getById(+req.params.userId);
+    return user.todos;
+  }
+
+  @Post(':userId/todos')
+  createTodo(@Request() req): Todo {
+    return this.usersService.addTodo(+req.params.userId, req.body);
+  }
+
+  @Get(':userId/todos/:todoId')
+  getTodo(@Request() req): Todo {
+    return this.usersService.getTodo(+req.params.userId, +req.params.todoId);
+  }
+
+  @Delete(':userId/todos/:todoId')
+  removeTodo(@Request() req): Todo {
+    return this.usersService.removeTodo(+req.params.userId, +req.params.todoId);
   }
 
 }

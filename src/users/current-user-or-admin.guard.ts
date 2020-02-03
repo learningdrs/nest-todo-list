@@ -10,6 +10,6 @@ export class CurrentUserOrAdminGuard implements CanActivate {
     const user = req.user as User;
     const userId = +req.params.userId;
 
-    return user.userId === userId || user.roles && user.roles.includes('admin');
+    return user.userId === userId || user.roles.includes('admin');
   }
 }
